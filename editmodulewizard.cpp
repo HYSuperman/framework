@@ -12,7 +12,6 @@
 editModuleWizard::editModuleWizard(QWidget *parent)
     :QWizard(parent)
 {
-
     addPage(new infoPage);
     source = new sourceRegistersPageEdit(sourceRegistersPage::SOURCE);
     addPage(source);
@@ -122,4 +121,11 @@ void sourceRegistersPageEdit::fillRegisters(QMapIterator<QString, register_attr>
     table->setItem(table->currentRow(), table->currentColumn(), tmp1);
     table->setItem(table->currentRow(), table->currentColumn()+1, tmp2);
     table->setCurrentCell(table->currentRow()+1, 0);
+    //qDebug("current:");
+    if(table->currentRow() == -1 && table->currentColumn() == -1){
+        table->insertRow(table->rowCount());
+        table->setCurrentCell(table->rowCount() - 1, 0);
+    }
+    //qDebug() << table->currentRow();
+    //qDebug() << table->currentColumn();
 }

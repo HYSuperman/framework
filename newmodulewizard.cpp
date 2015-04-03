@@ -29,14 +29,17 @@ newmodulewizard::newmodulewizard(QWidget *parent)
 void newmodulewizard::accept(){
     QFile *file = new QFile("output.xml");
     writer = new QXmlStreamWriter(file);
-    if(!file->open(QIODevice::ReadWrite | QIODevice::Text))
+    if(!file->open(QIODevice::Truncate | QIODevice::ReadWrite))
         return;
     writer->setAutoFormatting(true);
     writer->writeStartDocument();
     writer->writeStartElement("module");
     writer->writeStartElement("module_name");
-    writer->writeAttribute("timescale", "1ns/1ps");
+    //writer->writeAttribute("timescale", "1ns/1ps");   Cut in the newer version
     writer->writeCharacters(field("modulename").toString());
+    writer->writeEndElement();
+    writer->writeStartElement("timescale");
+    writer->writeCharacters("1ns/1ps");
     writer->writeEndElement();
     writer->writeStartElement("notes");
     QString noteString(field("notes").toString());
