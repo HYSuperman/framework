@@ -25,6 +25,7 @@ void mainWindow::closeEvent(QCloseEvent *event){
 
 
 void mainWindow::createActions(){
+
     newAction = new QAction("&New Top Module", this);
     newAction ->setShortcut(QKeySequence::New);
     connect(newAction, SIGNAL(triggered()), this, SLOT(newTopModule()));

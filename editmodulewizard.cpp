@@ -118,6 +118,7 @@ void sourceRegistersPageEdit::fillRegisters(QMapIterator<QString, register_attr>
 //    qDebug() << qPrintable(i.value().getWidth());
     QTableWidgetItem *tmp1 = new QTableWidgetItem(i.key());
     QTableWidgetItem *tmp2 = new QTableWidgetItem(i.value().getWidth());
+
     table->setItem(table->currentRow(), table->currentColumn(), tmp1);
     table->setItem(table->currentRow(), table->currentColumn()+1, tmp2);
     table->setCurrentCell(table->currentRow()+1, 0);
