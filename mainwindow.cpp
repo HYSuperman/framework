@@ -25,6 +25,7 @@ void mainWindow::closeEvent(QCloseEvent *event){
 
 
 void mainWindow::createActions(){
+
     newAction = new QAction("&New Top Module", this);
     newAction ->setShortcut(QKeySequence::New);
     connect(newAction, SIGNAL(triggered()), this, SLOT(newTopModule()));
@@ -109,7 +110,7 @@ void mainWindow::parseOpen(){
     values.insert("note", note);
 
     while(!parser->atEnd() && !parser->hasError()){
-
+        QString pname = parser->name().toString();
         /* Read the next token every time
          * Attention:According to QXmlStreamReader,
          * a token is one of these types: startelement, endelement, text,
@@ -125,7 +126,7 @@ void mainWindow::parseOpen(){
 
         /* When meeting a startelement document, parse into it! */
         if(token == QXmlStreamReader::StartElement){
-
+            //pname = parser->name().toString();
             if(parser->name() ==  "module"){
                 continue;
             }
@@ -175,14 +176,14 @@ void mainWindow::parseOpen(){
 
             if(parser->name() == "source"){
                 parser->readNext();
-
+                //pname = parser->name().toString();
                 /* Into while until meet </source> */
                 while(parser->name() != "source"){
-
+                    //pname = parser->name().toString();
                     parser->readNext();
-
+                    //pname = parser->name().toString();
                     if(parser->name() == "control_regs"){
-
+                        //pname = parser->name().toString();
                         token = parser->readNext();
 
                         /* Into while until meet </control_regs> */
@@ -190,16 +191,16 @@ void mainWindow::parseOpen(){
 
                             /* Only "name" tag could emerge inside this */
                             if(token == QXmlStreamReader::StartElement){
+
                                 QString registerName;
                                 register_attr tmp;
 
                                 tmp.setType("control_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
-
                                 sourceRegisterValues.insert(registerName, tmp);
+
                                 continue;
                             }
 
@@ -211,7 +212,7 @@ void mainWindow::parseOpen(){
 
                     /* Same as "control_regs, Just look above!" */
                     if(parser->name() == "state_regs"){
-
+                        //pname = parser->name().toString();
                         token = parser->readNext();
 
                         while(parser->name() != "state_regs"){
@@ -219,11 +220,13 @@ void mainWindow::parseOpen(){
                             if(token == QXmlStreamReader::StartElement){
                                 QString registerName;
                                 register_attr tmp;
+
                                 tmp.setType("state_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
                                 sourceRegisterValues.insert(registerName, tmp);
+
                                 continue;
                             }
                             token = parser->readNext();
@@ -233,16 +236,22 @@ void mainWindow::parseOpen(){
                     }
 
                     if(parser->name() == "module_commutation_regs"){
+                        //pname = parser->name().toString();
                         token = parser->readNext();
+                        //pname = parser->name().toString();
                         while(parser->name() != "module_commutation_regs"){
+                            //pname = parser->name().toString();
                             if(token == QXmlStreamReader::StartElement){
+                                //pname = parser->name().toString();
                                 QString registerName;
                                 register_attr tmp;
+
                                 tmp.setType("source_module_commutation_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
                                 sourceRegisterValues.insert(registerName, tmp);
+
                                 continue;
                             }
                             token = parser->readNext();
@@ -252,7 +261,7 @@ void mainWindow::parseOpen(){
                     }
                 }
 
-                /* Parse completed */
+                /* Parse source completed */
                 emit parseRegisterComplete(sourceRegisterValues, 0);//type 0 for source
 
                 parser->readNext();
@@ -275,11 +284,13 @@ void mainWindow::parseOpen(){
                             if(token == QXmlStreamReader::StartElement){
                                 QString registerName;
                                 register_attr tmp;
+
                                 tmp.setType("confirm_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
                                 sinkRegisterValues.insert(registerName, tmp);
+
                                 continue;
                             }
 
@@ -297,7 +308,7 @@ void mainWindow::parseOpen(){
                                 register_attr tmp;
                                 tmp.setType("debug_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
                                 sinkRegisterValues.insert(registerName, tmp);
                                 continue;
@@ -312,11 +323,12 @@ void mainWindow::parseOpen(){
                         token = parser->readNext();
                         while(parser->name() != "module_commutation_regs"){
                             if(token == QXmlStreamReader::StartElement){
+                                qDebug() << qPrintable(parser->name().toString());
                                 QString registerName;
                                 register_attr tmp;
                                 tmp.setType("sink_module_commutation_regs");
                                 tmp.setWidth(parser->attributes().value("width").toString());
-                                parser->readNext();
+                                token = parser->readNext();
                                 registerName = parser->text().toString();
                                 sinkRegisterValues.insert(registerName, tmp);
                                 continue;
