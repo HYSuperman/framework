@@ -5,8 +5,7 @@
 #include <QTextStream>
 
 grtTextEdit::grtTextEdit(QWidget* parent):QTextEdit(parent)
-{
-}
+{}
 
 
 bool grtTextEdit::writeFile(const QString &fileName){

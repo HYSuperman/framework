@@ -12,6 +12,10 @@ class QTextEdit;
 QT_END_NAMESPACE
 class sourceRegistersPageEdit;
 
+/*
+ * editModuleWizard is a wizard for reading the existed module
+ * and modify it and save the changes
+ */
 class editModuleWizard : public QWizard
 {
     Q_OBJECT
@@ -24,6 +28,9 @@ private:
 };
 
 
+/*
+ * The first page of the modify page wizard
+ */
 class infoPage:public QWizardPage{
     Q_OBJECT
 public:
@@ -40,13 +47,10 @@ public:
 
 private:
 
-
-
 public slots:
     void revealValues(QMap<QString, QString> values);
-
-
 };
+
 
 class sourceRegistersPageEdit:public sourceRegistersPage{
     Q_OBJECT

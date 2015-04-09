@@ -7,6 +7,7 @@
 newmodulewizard::newmodulewizard(QWidget *parent)
     : QWizard(parent)
 {
+    qDebug("haha");
     addPage(new moduleIntroPage);
     addPage(new moduleInfoPage);
 //    sourceRegistersPage *srp1 = new sourceRegistersPage(1);
@@ -27,6 +28,7 @@ newmodulewizard::newmodulewizard(QWidget *parent)
 }
 
 void newmodulewizard::accept(){
+    QString fifoCombo[3] = {"32", "64", "128"};
     QFile *file = new QFile("output.xml");
     writer = new QXmlStreamWriter(file);
     if(!file->open(QIODevice::Truncate | QIODevice::ReadWrite))
@@ -52,13 +54,13 @@ void newmodulewizard::accept(){
     writeRegisterXml(sr_control_R, CONTROL);
     writeRegisterXml(sr_state_R, STATE);
     writeRegisterXml(sr_modulec_R, MODULE);
-    writer->writeTextElement("FIFO_port_width", field("sr_fifo_width").toString());
+    writer->writeTextElement("FIFO_port_width", fifoCombo[field("sr_fifo_width").toInt()]);
     writer->writeEndElement();
     writer->writeStartElement("sink");
     writeRegisterXml(sk_control_R, CONFIRM);
     writeRegisterXml(sk_state_R, DEBUG);
     writeRegisterXml(sk_modulec_R, MODULE);
-    writer->writeTextElement("FIFO_port_width", field("sk_fifo_width").toString());
+    writer->writeTextElement("FIFO_port_width", fifoCombo[field("sk_fifo_width").toInt()]);
     writer->writeEndElement();
     writer->writeEndElement();
     writer->writeEndDocument();
@@ -202,14 +204,16 @@ void newmodulewizard::saveRegisters(int ty){
     }
 }
 
-
+/*
+ * First page
+ */
 moduleIntroPage::moduleIntroPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Introduction Page"));
     setPixmap(QWizard::WatermarkPixmap, QPixmap(""));
 
-    label = new QLabel(tr("This is new module wizard in GRT"));
+    label = new QLabel(tr("New module wizard"));
     label->setWordWrap(true);
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -217,17 +221,19 @@ moduleIntroPage::moduleIntroPage(QWidget *parent)
     setLayout(layout);
 }
 
-
+/*
+ * Module Name
+ */
 moduleInfoPage::moduleInfoPage(QWidget *parent)
     : QWizardPage(parent)
 {
-        setTitle(tr("Module Information"));
-        setSubTitle(tr("Specify basic information about the module from which you"
-                       "want to generate xml codes."));
+        setTitle(tr("Module Name"));
+        setSubTitle(tr("Specify Name of the module."));
         setPixmap(QWizard::LogoPixmap, QPixmap(""));
 
         moduleNameLabel = new QLabel("Module Name:");
         moduleNameLineEdit = new QLineEdit;
+        moduleNameLineEdit->setText("example");
         moduleNameLabel->setBuddy(moduleNameLineEdit);
 
 //        timescaleLabel = new QLabel(tr("Timescale:"));
@@ -245,20 +251,26 @@ moduleInfoPage::moduleInfoPage(QWidget *parent)
         setLayout(layout);
 }
 
+/*
+ * Register Pages, Two Types, Source and Sink
+ */
 sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     : QWizardPage(parent)
 {
     t = type;
+
     if(t == SOURCE){
-    setTitle(tr("Source Register Information"));
-    setSubTitle(tr("Source Registers"));
+        setTitle(tr("Source Register Information"));
+        setSubTitle(tr("Source Registers"));
     }
     else if(t == SINK){
-    setTitle(tr("Sink Register Information"));
-    setSubTitle(tr("Sink Registers"));
+        setTitle(tr("Sink Register Information"));
+        setSubTitle(tr("Sink Registers"));
     }
+
     setPixmap(QWizard::LogoPixmap, QPixmap(""));
 
+    /* hstrings is a QStringList storing the headers of each columns */
     QStringList *hstrings = new QStringList();
     hstrings->append("Name");
     hstrings->append("Width");
@@ -266,15 +278,21 @@ sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     controlRLabel = new QLabel("Control Registers:");
     if(t == SINK)
         controlRLabel->setText("Confirm Registers:");
+
     addcontrol = new QPushButton("+");
     deletecontrol = new QPushButton("-");
+
     QVBoxLayout *clayout = new QVBoxLayout;
     clayout->addWidget(controlRLabel);
     clayout->addWidget(addcontrol);
     clayout->addWidget(deletecontrol);
 
+    qDebug("haha1");
     controlTable = new QTableWidget(3, 2, this);
-    controlTable->setColumnWidth(1, 200);
+    QTableWidgetItem *tmp = new QTableWidgetItem("a");
+    QTableWidgetItem *tmp1 = new QTableWidgetItem("32");
+    controlTable->setItem(0, 0, tmp);
+    controlTable->setItem(0, 1, tmp1);
     controlTable->setHorizontalHeaderLabels(*hstrings);
     //qDebug() << controlTable->columnWidth(1);
     controlRLabel->setBuddy(controlTable);
@@ -289,6 +307,10 @@ sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     slayout->addWidget(addstate);
     slayout->addWidget(deletestate);
     stateTable = new QTableWidget(3, 2, this);
+    QTableWidgetItem *tmp2 = new QTableWidgetItem("a");
+    QTableWidgetItem *tmp3 = new QTableWidgetItem("32");
+    stateTable->setItem(0, 0, tmp2);
+    stateTable->setItem(0, 1, tmp3);
     stateTable->setColumnWidth(1, 200);
     stateTable->setHorizontalHeaderLabels(*hstrings);
     //qDebug() << stateTable->columnWidth(1);
@@ -302,20 +324,30 @@ sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     mlayout->addWidget(addmoduleCommutation);
     mlayout->addWidget(deletemoduleCommutation);
     moduleCommutationTable = new QTableWidget(3, 2, this);
+    QTableWidgetItem *tmp4 = new QTableWidgetItem("a");
+    QTableWidgetItem *tmp5 = new QTableWidgetItem("32");
+    moduleCommutationTable->setItem(0, 0, tmp4);
+    moduleCommutationTable->setItem(0, 1, tmp5);
     moduleCommutationTable->setColumnWidth(1, 200);
     moduleCommutationTable->setHorizontalHeaderLabels(*hstrings);
     //qDebug() << stateTable->columnWidth(1);
     moduleCommutationRLabel->setBuddy(moduleCommutationTable);
 
+    qDebug("haha3");
     fifo = new QLabel("FIFO Width: ");
-    fifoLine = new QLineEdit;
+    fifoLine = new QComboBox;
+    fifoLine->addItem("32");
+    fifoLine->addItem("64");
+    fifoLine->addItem("128");
     fifo->setBuddy(fifoLine);
 
+    qDebug("haha4");
     if(t == SOURCE)
         registerField("sr_fifo_width", fifoLine);
     else if(t == SINK)
         registerField("sk_fifo_width", fifoLine);
 
+    qDebug("haha5");
 //    if(type == 1){
 //        for(int i = 0;i < controlTable->rowCount();i++)
 //            for(int j = 0;j < controlTable->columnCount();j++){
@@ -346,6 +378,7 @@ sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     layout->addWidget(fifoLine, 3, 1, 1, 2);
     setLayout(layout);
 
+    qDebug("haha6");
 //    if(wizard() == NULL){
 //        qDebug("afdf");
 //    }
@@ -363,6 +396,7 @@ sourceRegistersPage::sourceRegistersPage(Type type, QWidget *parent)
     connect(this, SIGNAL(deletecontrolr(int)), controlTable, SLOT(removeRow(int)));
     connect(this, SIGNAL(deletestater(int)), stateTable, SLOT(removeRow(int)));
     connect(this, SIGNAL(deletecommutationr(int)), moduleCommutationTable, SLOT(removeRow(int)));
+
 }
 
 bool sourceRegistersPage::validatePage(){

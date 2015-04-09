@@ -9,6 +9,7 @@ class QLineEdit;
 class QTextEdit;
 class QTableWidget;
 class QPushButton;
+class QComboBox;
 class QXmlStreamWriter;
 QT_END_NAMESPACE
 
@@ -95,7 +96,7 @@ private:
     QPushButton *deletestate;
     QPushButton *addmoduleCommutation;
     QPushButton *deletemoduleCommutation;
-    QLineEdit *fifoLine;
+    QComboBox *fifoLine;
 
 signals:
     void addcontrolr(int which);

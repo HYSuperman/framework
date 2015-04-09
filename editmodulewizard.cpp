@@ -75,7 +75,7 @@ void infoPage::revealValues(QMap<QString, QString> values){
 }
 
 
-/*sourceRegistersPageEdit inherits sourceRegistersPage, this class is used to display the parsed xml and modify it */
+/* sourceRegistersPageEdit inherits sourceRegistersPage, this class is used to display the parsed xml and modify it */
 sourceRegistersPageEdit::sourceRegistersPageEdit(sourceRegistersPage::Type t, QWidget *parent)
     :sourceRegistersPage(t, parent){
 }
